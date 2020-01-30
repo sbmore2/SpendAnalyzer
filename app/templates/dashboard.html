@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="charts">
+		<div class="chart_row">
+			<div class="chart_column">
+				<canvas id="categoricalChart"></canvas>
+				<script>
+					var ctx = document.getElementById('categoricalChart').getContext('2d');
+
+					var DoughnutChart = new Chart(ctx, {
+					    type: 'doughnut',
+
+					    data: {
+					        labels: [{% for item in categorical_data.labels %}
+					                    "{{item}}",
+					                 {% endfor %}],
+					        datasets: [{
+					            backgroundColor: [
+						            'rgba(255, 99, 132, 0.8)',
+						            'rgba(54, 162, 235, 0.8)',
+						            'rgba(255, 206, 86, 0.8)',
+						            'rgba(75, 192, 192, 0.8)',
+						            'rgba(153, 102, 255, 0.8)',
+						            'rgba(255, 159, 64, 0.8)'
+						        ],
+					            data: [{% for item in categorical_data.data %}
+					                    {{item}},
+					                 {% endfor %}],
+					        }]
+					    },
+
+					    options: {
+					    	title: {
+					    		display: true,
+					    		text: "Categorical Analysis"
+					    	},
+					    	legend: {
+					    		display: true,
+					    		position: 'left'
+					    	},
+					    	tooltips: {
+					    		enabled: true,
+					    		mode: 'single',
+					    		callbacks: {
+					    			label: function(tooltipItems, data) {
+					    				var idx = tooltipItems.index;
+					    				var val = data.datasets[0].data[idx];
+					    				return '$' + Math.round(val*100)/100;
+					    			}
+					    		}
+					    	}
+					    }
+					});
+
+					var canvas = document.getElementById('categoricalChart');
+					canvas.onclick = function(evt) {
+						var activePoints = DoughnutChart.getElementsAtEvent(evt);
+						if (activePoints[0]) {
+							var chartData = activePoints[0]['_chart'].config.data;
+							var idx = activePoints[0]['_index'];
+							var label = chartData.labels[idx];
+							console.log(label);
+						}
+					};
+				</script>
+			</div>
+
+			<div class="chart_column">
+				<canvas id="monthChart"></canvas>
+				<script>
+					var ctx = document.getElementById('monthChart').getContext('2d');
+
+					var Barchart = new Chart(ctx, {
+					    type: 'bar',
+
+					    // The data for our dataset
+					    data: {
+					        labels: [{% for item in month_data.labels %}
+					                    "{{item}}",
+					                 {% endfor %}],
+					        datasets: [{
+					            backgroundColor: [
+						            'rgba(255, 99, 132, 0.8)',
+						            'rgba(54, 162, 235, 0.8)',
+						            'rgba(255, 206, 86, 0.8)',
+						            'rgba(75, 192, 192, 0.8)',
+						            'rgba(153, 102, 255, 0.8)',
+						            'rgba(255, 159, 64, 0.8)'
+						        ],
+					            data: [{% for item in month_data.data %}
+					                    {{item}},
+					                 {% endfor %}],
+					        }]
+					    },
+
+					    options: {
+					    	legend: {display: false},
+					    	title: {
+					    		display: true,
+					    		text: "Month-by-Month Analysis"
+					    	},
+					    	scales: {
+					    		yAxes: [{scaleLabel: {display: true, labelString: "Amount Spent ($)"}}]
+					    	}
+					    }
+					});
+				</script>
+			</div>
+			<div class="chart_column">
+				<p>Most frequently visited restaurants in the last <input type="text" placeholder="8"> months</p>
+				<p>You visited {{unique_rest_visited}} restaurants in the last 8 months.</p>
+				<table>
+					<tr>
+						<th>Restaurant</th>
+						<th>Frequency</th>
+					</tr>
+					{% for row in restaurants %}
+						<tr>
+							<td>{{ row[0] }}</td>
+							<td>{{ row[1] }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+	</div>	
+
+	<div class="wrapper">
+		<table>
+			<tr>
+				<th>Date</th>
+				<th>Description</th>
+				<th>Amount</th>
+				<th>Balance</th>
+				<th>Category</th>
+			</tr>
+			{% for row in payments %}
+				<tr>
+					<td>{{ row.date }}</td>
+					<td>{{ row.desc }}</td>
+					<td>{{ row.amount }}</td>
+					<td>{{ row.balance }}</td>
+					<td>{{ row.category }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+
+<link href="{{ url_for('static', filename='css/dashboard.css') }}" type="text/css" rel="stylesheet">
+
+{% endblock %}

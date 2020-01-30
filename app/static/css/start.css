@@ -1,0 +1,17 @@
+body {
+	background: #b3d9ff;
+}
+
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%
+}
+
+.box {
+	max-width: 50%;
+	padding: 10px;
+	text-align: center;
+}
